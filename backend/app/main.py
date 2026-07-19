@@ -3,6 +3,7 @@ import json
 from datetime import date, datetime, timedelta
 
 from fastapi import FastAPI, Request, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, EmailStr
@@ -18,6 +19,22 @@ from .ai.coach import one_action
 
 app = FastAPI(title="VOLTA", docs_url=None, redoc_url=None)
 init_db()
+
+# Auth is a Bearer header (no cookies), so no allow_credentials needed.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://volta.app",
+        "https://www.volta.app",
+        "https://getvolta.com",
+        "https://www.getvolta.com",
+        "https://voltahealth.com",
+        "https://voltabody.com",
+    ],
+    allow_origin_regex=r"https://volta-[a-z0-9-]*\.vercel\.app|http://localhost:\d+|http://127\.0\.0\.1:\d+",
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # ---------- helpers ----------
